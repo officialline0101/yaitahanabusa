@@ -544,7 +544,7 @@
         <div class="info-textmemo">⇩自由回答⇩</div>
         <textarea id="message5" rows="1" placeholder="入力してください"></textarea> <!-- メッセージ入力フィールド -->
 
-        <div class="label">当院で受けてみたいメニューはありますか？</div>
+        <div class="label">当院で受けてみたいメニューはありますか？ <br>（複数選択可）</div>
         <div class="chance-buttons">
             <button type="button" id="onechance" onclick="selectchance(this)">💆‍♀️ 肩こり・腰痛ケア</button>
             <button type="button" id="twochance" onclick="selectchance(this)">🦴 姿勢矯正・骨盤矯正</button>
@@ -583,7 +583,7 @@
             <button type="button" id="twodelivery" onclick="selectdelivery(this)">その他</button>
         </div>
 
-        <div class="label">今後、受け取りたい情報はありますか？</div>
+        <div class="label">今後、受け取りたい情報はありますか？<br>（複数選択可）</div>
         <div class="information-buttons">
             <button type="button" id="oneinformation" onclick="selectinformation(this)">🎁 限定クーポン・キャンペーン案内</button>
             <button type="button" id="twoinformation" onclick="selectinformation(this)">📅 ご予約の空き状況</button>
@@ -606,7 +606,7 @@
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script> <!-- LIFF SDKの読み込み -->
     <script>
         let visitreservationCount = '';
-        let informationCount = '';
+        let informationCount = [];
         let priorityCount = []; // 選択された優先度のリスト
         let chanceCount = []; // 選択された優先度のリスト
         let demandCount = []; // 選択された優先度のリスト
@@ -728,15 +728,24 @@ function selectchance(element) {
             visitreservationCount = element.innerText;
         }
 
-        function selectinformation(element) {
-            // 単一選択項目の処理コード
-            const buttons = document.querySelectorAll('.information-buttons button');
-            buttons.forEach(button => button.classList.remove('active'));
+function selectinformation(element) {
+    // 改行や複数スペースを1つのスペースに変換し、余計な空白をトリム
+    const text = element.innerText.replace(/\s*\n\s*/g, ' ').trim();
 
-            // 選択されたボタンだけにactiveクラスを追加
-            element.classList.add('active');
-            informationCount = element.innerText;
+    // active クラスの切り替え（トグル）
+    element.classList.toggle('active');
+
+    // 配列に追加または削除
+    if (element.classList.contains('active')) {
+        if (!informationCount.includes(text)) {
+            informationCount.push(text);
         }
+    } else {
+        informationCount = informationCount.filter(item => item !== text);
+    }
+
+    console.log(informationCount); // デバッグ確認
+}
 
         function submitForm() {
             const message = document.getElementById('message').value;
@@ -829,7 +838,7 @@ const chanceText = formData.chanceCount && formData.chanceCount.length
     // LINEトークにメッセージを送信
     liff.sendMessages([{
         type: 'text',
-        text: `≪アンケート≫\n【氏名（漢字）】\n・${formData.message}\n\n【氏名（カナ）】\n・${formData.message2}\n\n【生年月日】\n・${formData.message3}\n\n【気になるお悩み】${priorityText}${message4Text}\n\n【興味を持ったきっかけ】${demandText}${message5Text}\n\n【受けてみたいメニュー】${chanceText}${message7Text}\n\n【年齢層】\n・${formData.IntroductionCount}\n\n【性別】\n・${formData.deliveryCount}\n\n【受け取りたい情報】\n・${formData.informationCount}\n\n【ご来院について】\n・${formData.visitreservationCount}`
+        text: `≪アンケート≫\n【氏名（漢字）】\n・${formData.message}\n\n【氏名（カナ）】\n・${formData.message2}\n\n【生年月日】\n・${formData.message3}\n\n【気になるお悩み】${priorityText}${message4Text}\n\n【興味を持ったきっかけ】${demandText}${message5Text}\n\n【受けてみたいメニュー】${chanceText}${message7Text}\n\n【年齢層】\n・${formData.IntroductionCount}\n\n【性別】\n・${formData.deliveryCount}\n\n【受け取りたい情報】\n・${formData.informationCount.join('\n・')}\n\n【ご来院について】\n・${formData.visitreservationCount}`
     }]).then(() => {
         alert('ご回答ありがとうございます。');
         liff.closeWindow();
