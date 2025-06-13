@@ -831,7 +831,7 @@ const chanceText = formData.chanceCount && formData.chanceCount.length
         type: 'text',
         text: `≪アンケート≫\n【氏名（漢字）】\n・${formData.message}\n\n【氏名（カナ）】\n・${formData.message2}\n\n【生年月日】\n・${formData.message3}\n\n【気になるお悩み】${priorityText}${message4Text}\n\n【興味を持ったきっかけ】${demandText}${message5Text}\n\n【受けてみたいメニュー】${chanceText}${message7Text}\n\n【年齢層】\n・${formData.IntroductionCount}\n\n【性別】\n・${formData.deliveryCount}\n\n【受け取りたい情報】\n・${formData.informationCount}\n\n【ご来院について】\n・${formData.visitreservationCount}`
     }]).then(() => {
-        alert('ご記入ありがとうございます。同意書が表示されますので、ご確認ください。');
+        alert('ご回答ありがとうございます。');
         liff.closeWindow();
     }).catch((err) => {
         console.error('メッセージの送信に失敗しました', err);
